@@ -15,8 +15,10 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: 1,
-      onError: () => {
-        toast.error("Something went wrong. Please try again.");
+      onSettled: (data, error) => {
+        if (error) {
+          toast.error("Something went wrong. Please try again.");
+        }
       },
     },
   },
