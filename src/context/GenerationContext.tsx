@@ -15,7 +15,8 @@ interface GenerationContextType {
 
 const GenerationContext = createContext<GenerationContextType | undefined>(undefined);
 
-export function GenerationProvider({ children }: { children: ReactNode }) {
+// Separate the provider component definition from its export
+const GenerationProviderComponent = ({ children }: { children: ReactNode }) => {
   const [images, setImages] = useState<GeneratedImage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
@@ -52,8 +53,12 @@ export function GenerationProvider({ children }: { children: ReactNode }) {
       {children}
     </GenerationContext.Provider>
   );
-}
+};
 
+// Export the provider separately from its definition for Fast Refresh compatibility
+export const GenerationProvider = GenerationProviderComponent;
+
+// Export the hook separately for Fast Refresh compatibility
 export function useGeneration() {
   const context = useContext(GenerationContext);
   if (context === undefined) {
