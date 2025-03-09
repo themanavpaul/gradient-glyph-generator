@@ -4,7 +4,7 @@ import { Download, Share2, RotateCw } from 'lucide-react';
 import { useGeneration } from '../context/GenerationContext';
 
 const ImageDisplay = () => {
-  const { images, isGenerating } = useGeneration();
+  const { images, isGenerating, generationProgress } = useGeneration();
   
   const downloadImage = (dataUrl: string, filename: string) => {
     const link = document.createElement('a');
@@ -18,12 +18,26 @@ const ImageDisplay = () => {
   if (isGenerating) {
     return (
       <div className="w-full flex justify-center items-center py-12">
-        <div className="max-w-md aspect-square flex flex-col justify-center items-center glass-morphism rounded-2xl p-8 animate-pulse">
+        <div className="max-w-md w-full flex flex-col justify-center items-center glass-morphism rounded-2xl p-8 animate-pulse">
           <div className="relative">
             <div className="h-12 w-12 rounded-full border-4 border-nebula-500/30 border-t-nebula-500 animate-spin"></div>
             <div className="absolute inset-0 bg-purple-glow opacity-30"></div>
           </div>
-          <p className="mt-6 text-white/70 text-sm animate-pulse">Creating your masterpiece...</p>
+          <p className="mt-6 text-white/70 text-sm">
+            {generationProgress 
+              ? `Generating image ${generationProgress.current} of ${generationProgress.total}...` 
+              : "Creating your masterpiece..."}
+          </p>
+          {generationProgress && (
+            <div className="w-full max-w-xs mt-4">
+              <div className="h-1.5 bg-white/10 rounded-full">
+                <div 
+                  className="h-1.5 bg-nebula-500 rounded-full transition-all duration-300"
+                  style={{ width: `${(generationProgress.current / generationProgress.total) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );

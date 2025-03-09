@@ -5,12 +5,16 @@ import { GeneratedImage, GenerationOptions, DEFAULT_OPTIONS } from '../services/
 interface GenerationContextType {
   images: GeneratedImage[];
   isGenerating: boolean;
+  generationProgress: { current: number, total: number } | null;
   currentOptions: GenerationOptions;
   selectedImage: GeneratedImage | null;
+  numImagesOption: number;
   setCurrentOptions: (options: Partial<GenerationOptions>) => void;
   addGeneratedImage: (image: GeneratedImage) => void;
   selectImage: (image: GeneratedImage | null) => void;
   setIsGenerating: (isGenerating: boolean) => void;
+  setNumImagesOption: (num: number) => void;
+  setGenerationProgress: (progress: { current: number, total: number } | null) => void;
 }
 
 const GenerationContext = createContext<GenerationContextType | undefined>(undefined);
@@ -20,6 +24,8 @@ const GenerationProviderComponent = ({ children }: { children: ReactNode }) => {
   const [images, setImages] = useState<GeneratedImage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
+  const [numImagesOption, setNumImagesOption] = useState<number>(1);
+  const [generationProgress, setGenerationProgress] = useState<{ current: number, total: number } | null>(null);
   const [currentOptions, setOptions] = useState<GenerationOptions>({
     prompt: '',
     ...DEFAULT_OPTIONS
@@ -42,12 +48,16 @@ const GenerationProviderComponent = ({ children }: { children: ReactNode }) => {
       value={{
         images,
         isGenerating,
+        generationProgress,
         currentOptions,
         selectedImage,
+        numImagesOption,
         setCurrentOptions,
         addGeneratedImage,
         selectImage,
-        setIsGenerating
+        setIsGenerating,
+        setNumImagesOption,
+        setGenerationProgress
       }}
     >
       {children}

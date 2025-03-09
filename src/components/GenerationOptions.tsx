@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Settings, ChevronDown, ChevronUp } from 'lucide-react';
 import { useGeneration } from '../context/GenerationContext';
 import { DEFAULT_OPTIONS } from '../services/nebiusApi';
+import NumImagesSelector from './NumImagesSelector';
 
 const GenerationOptions = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -48,6 +49,8 @@ const GenerationOptions = () => {
       
       {isExpanded && (
         <div className="px-4 py-3 border-t border-white/5 animate-slideUp">
+          <NumImagesSelector />
+          
           <div className="mb-4">
             <label className="block text-sm text-white/70 mb-2">Dimensions</label>
             <div className="flex flex-wrap gap-2">

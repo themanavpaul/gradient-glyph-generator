@@ -7,11 +7,42 @@ import { toast } from 'sonner';
 
 const PromptInput = () => {
   const [prompt, setPrompt] = useState('');
-  const { setCurrentOptions, addGeneratedImage, setIsGenerating, isGenerating } = useGeneration();
+  const { 
+    setCurrentOptions, 
+    addGeneratedImage, 
+    setIsGenerating, 
+    isGenerating, 
+    numImagesOption,
+    setGenerationProgress
+  } = useGeneration();
 
   const handlePromptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPrompt(e.target.value);
     setCurrentOptions({ prompt: e.target.value });
+  };
+
+  const generateSequentially = async (options, totalImages) => {
+    for (let i = 0; i < totalImages; i++) {
+      try {
+        setGenerationProgress({ current: i + 1, total: totalImages });
+        
+        // Small delay to prevent rate limiting
+        if (i > 0) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
+        const generatedImage = await nebiusApi.generateImage(options);
+        addGeneratedImage(generatedImage);
+        
+        if (i === 0) {
+          toast.success('First image generated! Continuing...');
+        }
+      } catch (error) {
+        console.error(`Error generating image ${i+1}/${totalImages}:`, error);
+        toast.error(`Failed to generate image ${i+1}/${totalImages}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        break; // Stop the sequence if any generation fails
+      }
+    }
   };
 
   const handleGenerate = async () => {
@@ -19,20 +50,22 @@ const PromptInput = () => {
     
     try {
       setIsGenerating(true);
+      setGenerationProgress({ current: 0, total: numImagesOption });
+      
       const options = { 
         prompt: prompt.trim(),
         // Include other options from context if needed
       };
       setCurrentOptions(options);
       
-      const generatedImage = await nebiusApi.generateImage(options);
-      addGeneratedImage(generatedImage);
-      toast.success('Image generated successfully!');
+      await generateSequentially(options, numImagesOption);
+      toast.success(`Successfully generated ${numImagesOption} image${numImagesOption > 1 ? 's' : ''}!`);
     } catch (error) {
-      console.error("Error generating image:", error);
-      toast.error(error instanceof Error ? error.message : 'Failed to generate image');
+      console.error("Error in generation sequence:", error);
+      toast.error(error instanceof Error ? error.message : 'Failed to complete image generation');
     } finally {
       setIsGenerating(false);
+      setGenerationProgress(null);
     }
   };
 
