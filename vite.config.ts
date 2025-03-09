@@ -18,6 +18,9 @@ export default defineConfig({
         target: 'https://pqehihvidbnltyzdcvtl.supabase.co/functions/v1/generate-image',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/generate-image/, ''),
+        headers: {
+          'Authorization': 'Bearer REPLACE_WITH_ANON_KEY',
+        }
       }
     }
   }

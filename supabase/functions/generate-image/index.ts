@@ -22,6 +22,7 @@ serve(async (req) => {
     const { prompt, negativePrompt, width, height, numInferenceSteps, seed } = await req.json();
 
     console.log('Generating image with prompt:', prompt);
+    console.log('Request payload:', { prompt, negativePrompt, width, height, numInferenceSteps, seed });
     
     const response = await fetch('https://api.studio.nebius.com/v1/images/generations', {
       method: 'POST',
@@ -45,12 +46,29 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Nebius API error:', errorData);
-      throw new Error(`Nebius API error: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('Nebius API error:', errorText);
+      
+      try {
+        const errorData = JSON.parse(errorText);
+        return new Response(JSON.stringify({ error: errorData }), {
+          status: response.status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: `Nebius API error: ${response.status} ${response.statusText}` }), {
+          status: response.status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
     }
 
     const data = await response.json();
+    
+    if (!data.data || !data.data[0] || !data.data[0].b64_json) {
+      console.error('Unexpected API response format:', data);
+      throw new Error('Unexpected API response format');
+    }
     
     const generatedImage = {
       id: `img-${Date.now()}-${Math.floor(Math.random() * 1000)}`,

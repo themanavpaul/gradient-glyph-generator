@@ -34,21 +34,35 @@ class NebiusApiService {
     try {
       console.log("Generating image with options:", options);
       
-      const response = await fetch(`${window.location.origin}/api/generate-image`, {
+      const fullOptions = {
+        ...DEFAULT_OPTIONS,
+        ...options
+      };
+      
+      const response = await fetch(this.apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(options)
+        body: JSON.stringify(fullOptions)
       });
       
       if (!response.ok) {
-        const errorData = await response.text();
-        console.error('API error:', errorData);
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('API error response:', errorText);
+        
+        try {
+          // Try to parse as JSON
+          const errorData = JSON.parse(errorText);
+          throw new Error(`API error: ${errorData.message || response.statusText}`);
+        } catch (e) {
+          // If not JSON, return the raw error
+          throw new Error(`API error: ${response.status} ${response.statusText}. Check console for details.`);
+        }
       }
       
-      return await response.json();
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error("Failed to generate image:", error);
       throw error;

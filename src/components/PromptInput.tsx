@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Sparkles, Send, Wand2 } from 'lucide-react';
 import { useGeneration } from '../context/GenerationContext';
 import { nebiusApi } from '../services/nebiusApi';
+import { toast } from 'sonner';
 
 const PromptInput = () => {
   const [prompt, setPrompt] = useState('');
@@ -18,13 +19,18 @@ const PromptInput = () => {
     
     try {
       setIsGenerating(true);
-      const options = { prompt: prompt.trim() };
+      const options = { 
+        prompt: prompt.trim(),
+        // Include other options from context if needed
+      };
       setCurrentOptions(options);
       
       const generatedImage = await nebiusApi.generateImage(options);
       addGeneratedImage(generatedImage);
+      toast.success('Image generated successfully!');
     } catch (error) {
       console.error("Error generating image:", error);
+      toast.error(error instanceof Error ? error.message : 'Failed to generate image');
     } finally {
       setIsGenerating(false);
     }
