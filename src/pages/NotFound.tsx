@@ -1,5 +1,7 @@
+
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { Home } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
@@ -12,12 +14,13 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
+    <div className="min-h-screen flex items-center justify-center bg-dark-bg">
+      <div className="glass-morphism rounded-xl p-8 text-center max-w-md mx-auto">
+        <h1 className="text-5xl font-bold mb-4 text-gradient-purple">404</h1>
+        <p className="text-xl text-white mb-6">This dimension doesn't exist</p>
+        <a href="/" className="flex items-center justify-center space-x-2 text-nebula-400 hover:text-nebula-300 transition-colors duration-200">
+          <Home className="h-5 w-5" />
+          <span>Return to Reality</span>
         </a>
       </div>
     </div>
