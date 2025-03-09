@@ -47,22 +47,31 @@ class NebiusApiService {
         body: JSON.stringify(fullOptions)
       });
       
+      // Log the raw response for debugging
+      const responseText = await response.text();
+      console.log('Raw API response:', responseText);
+      
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API error response:', errorText);
+        console.error('API error response:', responseText);
         
         try {
-          // Try to parse as JSON
-          const errorData = JSON.parse(errorText);
+          // Try to parse as JSON if possible
+          const errorData = JSON.parse(responseText);
           throw new Error(`API error: ${errorData.message || response.statusText}`);
         } catch (e) {
-          // If not JSON, return the raw error
-          throw new Error(`API error: ${response.status} ${response.statusText}. Check console for details.`);
+          // If not JSON, return the raw error text for debugging
+          throw new Error(`API error: ${response.status} ${response.statusText}. Response was not valid JSON.`);
         }
       }
       
-      const data = await response.json();
-      return data;
+      try {
+        // Parse the response text as JSON
+        const data = JSON.parse(responseText);
+        return data;
+      } catch (e) {
+        console.error("Failed to parse response as JSON:", e);
+        throw new Error("Received invalid JSON response from server");
+      }
     } catch (error) {
       console.error("Failed to generate image:", error);
       throw error;

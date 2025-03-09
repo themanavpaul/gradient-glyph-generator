@@ -19,7 +19,7 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/generate-image/, ''),
         headers: {
-          'Authorization': 'Bearer REPLACE_WITH_ANON_KEY',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxZWhpaHZpZGJubHR5emRjdnRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzNTU3MjAsImV4cCI6MjA1NjkzMTcyMH0.4EdMpSHjNZ5MQmRvLgn7qpYFPyRRXV_7HgX21Rjl4CY',
         }
       }
     }
